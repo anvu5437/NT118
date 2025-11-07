@@ -15,11 +15,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NT118"
-        tools:targetApi="33"
         android:usesCleartextTraffic="true"
-        android:networkSecurityConfig="@xml/network_security_config">
+        android:networkSecurityConfig="@xml/network_security_config"
+        tools:targetApi="33">
 
-        <!-- Màn hình Đăng nhập (khởi động đầu tiên) -->
+        <!-- 🔹 Màn hình khởi động: Login -->
         <activity
             android:name=".LoginActivity"
             android:exported="true"
@@ -30,16 +30,17 @@
             </intent-filter>
         </activity>
 
-        <!-- Màn hình Đăng ký -->
+        <!-- 🔹 Màn hình đăng ký -->
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
-        <!-- Màn hình chính sau khi đăng nhập -->
+        <!-- 🔹 Màn hình hồ sơ người dùng -->
         <activity
-            android:name=".HomeActivity"
-            android:exported="false" />
+            android:name=".ProfileActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
     </application>
 

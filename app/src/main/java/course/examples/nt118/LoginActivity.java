@@ -1,8 +1,5 @@
 package course.examples.nt118;
 
-
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
@@ -10,9 +7,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import course.examples.nt118.model.LoginRequest;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import course.examples.nt118.model.LoginResponse;
 import course.examples.nt118.model.UserResponse;
-import course.examples.nt118.network.ApiService;
 import course.examples.nt118.network.RetrofitClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,70 +22,68 @@ import retrofit2.Response;
 public class LoginActivity extends AppCompatActivity {
 
     private EditText emailEditText, passwordEditText;
-    private Button signInButton;
-    private TextView signUpTextView;
+    private Button loginButton;
+    private TextView signupTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Ánh xạ view từ layout
+        // Khởi tạo RetrofitClient
+        RetrofitClient.init(this);
+
         emailEditText = findViewById(R.id.emailEditText);
         passwordEditText = findViewById(R.id.passwordEditText);
-        signInButton = findViewById(R.id.signInButton);
-        signUpTextView = findViewById(R.id.signUpTextView);
+        loginButton = findViewById(R.id.signInButton);
+        signupTextView = findViewById(R.id.signUpTextView);
 
-        // 👉 Khi bấm "Sign in"
-        signInButton.setOnClickListener(v -> {
-            String email = emailEditText.getText().toString().trim();
-            String password = passwordEditText.getText().toString().trim();
+        loginButton.setOnClickListener(v -> loginUser());
 
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập email và mật khẩu", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            loginUser(email, password);
-        });
-
-        // 👉 Khi bấm "Sign up" (chuyển sang RegisterActivity)
-        signUpTextView.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-            startActivity(intent);
-        });
+        signupTextView.setOnClickListener(v ->
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class))
+        );
     }
 
-    private void loginUser(String email, String password) {
-        ApiService api = RetrofitClient.getInstance().create(ApiService.class);
-        LoginRequest request = new LoginRequest(email, password);
+    private void loginUser() {
+        String email = emailEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
 
-        Call<UserResponse> call = api.login(request);
-        call.enqueue(new Callback<UserResponse>() {
+        if (email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Vui lòng nhập email và mật khẩu", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Map<String, String> body = new HashMap<>();
+        body.put("email", email);
+        body.put("password", password);
+
+        RetrofitClient.getApiService().loginUser(body).enqueue(new Callback<LoginResponse>() {
             @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getUser() != null) {
-                    UserResponse.User user = response.body().getUser();
-                    Toast.makeText(LoginActivity.this,
-                            "Đăng nhập thành công: " + user.getName(),
-                            Toast.LENGTH_LONG).show();
+            public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    UserResponse user = response.body().getUser();
+                    if (user != null) {
+                        // Lưu cookie vào SharedPreferences
+                        RetrofitClient.saveCookies();
 
-                    // TODO: chuyển sang màn hình chính sau khi login (HomeActivity)
-                    // Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-                    // intent.putExtra("username", user.getName());
-                    // startActivity(intent);
-                    // finish();
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
+                        intent.putExtra("USER_ID", user.getId());
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(LoginActivity.this, "Không nhận được thông tin người dùng", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
-                    Toast.makeText(LoginActivity.this, "Sai email hoặc mật khẩu!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Đăng nhập thất bại", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<UserResponse> call, Throwable t) {
+            public void onFailure(Call<LoginResponse> call, Throwable t) {
                 Toast.makeText(LoginActivity.this, "Lỗi kết nối: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 }
-
-
