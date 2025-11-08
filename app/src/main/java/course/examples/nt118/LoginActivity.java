@@ -37,12 +37,19 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.passwordEditText);
         loginButton = findViewById(R.id.signInButton);
         signupTextView = findViewById(R.id.signUpTextView);
+        TextView forgotPasswordTextView = findViewById(R.id.forgotPasswordTextView);
 
         loginButton.setOnClickListener(v -> loginUser());
 
         signupTextView.setOnClickListener(v ->
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class))
         );
+
+        // ✅ Xử lý nhấn Forgot Password
+        forgotPasswordTextView.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void loginUser() {

@@ -42,6 +42,24 @@
             android:exported="false"
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
+        <!-- 🔹 Màn hình quên mật khẩu -->
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <!-- 🔹 Màn hình verify OTP -->
+        <activity
+            android:name=".VerifyOtpActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
+        <!-- 🔹 Màn hình reset mật khẩu -->
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize|stateHidden" />
+
     </application>
 
 </manifest>
