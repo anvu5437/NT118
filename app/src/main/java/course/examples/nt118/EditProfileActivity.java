@@ -50,7 +50,12 @@ public class EditProfileActivity extends AppCompatActivity {
         loadUserInfo();
 
         saveButton.setOnClickListener(v -> updateUserProfile());
-        backButton.setOnClickListener(v -> finish());
+        backButton.setOnClickListener(v -> {
+            Intent intent = new Intent(EditProfileActivity.this, ProfileActivity.class);
+            intent.putExtra("USER_ID", userId);  // gửi lại userId
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void loadUserInfo() {

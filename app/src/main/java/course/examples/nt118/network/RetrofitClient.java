@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitClient {
 
-    private static final String BASE_URL = "http://10.0.2.2:3000/api/";
+    private static final String BASE_URL = "https://gateway-734851024323.asia-southeast1.run.app/api/";
     private static Retrofit retrofit = null;
     private static ApiService apiService = null;
 
